@@ -1,0 +1,15 @@
+{
+  "input_count": 7300,
+  "output_count": 7300,
+  "high_value_count": 962,
+  "stats": {
+    "total_processed": 7300,
+    "company_restored_from_desc": 1778,
+    "degree_restored_from_desc": 440,
+    "city_restored_from_desc": 194,
+    "type_restored_from_desc": 536,
+    "company_unknown": 499,
+    "city_restored_from_title": 84,
+    "duplicate_content_warning": 846
+  }
+}
