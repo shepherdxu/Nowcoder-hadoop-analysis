@@ -32,6 +32,12 @@ public class JobRecord {
     private Integer minSalary; // 最低薪资（月薪，单位：元）
     private Integer maxSalary; // 最高薪资（月薪，单位：元）
     private Integer salaryMonths; // 薪资月数
+    private boolean negotiable; // 是否薪资面议
+
+    // 新增字段 - 从职位描述中解析
+    private int collectionCount; // 收藏数（从"195位牛友收藏"中提取）
+    private String activeStatus; // 活跃状态（"刚刚有人投递过"等）
+    private boolean isActive; // 是否活跃岗位
 
     // 薪资解析正则
     private static final Pattern SALARY_PATTERN = Pattern.compile("(\\d+)-(\\d+)[Kk]");
@@ -66,6 +72,9 @@ public class JobRecord {
         // 解析薪资
         record.parseSalary();
 
+        // 解析职位描述（收藏数、活跃状态）
+        record.parseJobDesc();
+
         return record;
     }
 
@@ -87,9 +96,17 @@ public class JobRecord {
      * 格式示例: "15-25K·14薪" -> minSalary=15000, maxSalary=25000, months=14
      */
     private void parseSalary() {
-        if (salary == null || salary.isEmpty() || salary.contains("面议")) {
+        if (salary == null || salary.isEmpty()) {
+            this.negotiable = true;
             return;
         }
+
+        if (salary.contains("面议")) {
+            this.negotiable = true;
+            return;
+        }
+
+        this.negotiable = false;
 
         Matcher salaryMatcher = SALARY_PATTERN.matcher(salary);
         if (salaryMatcher.find()) {
@@ -102,6 +119,35 @@ public class JobRecord {
             this.salaryMonths = Integer.parseInt(monthsMatcher.group(1));
         } else {
             this.salaryMonths = 12; // 默认12薪
+        }
+    }
+
+    /**
+     * 解析职位描述，提取收藏数和活跃状态
+     * 格式示例: "195位牛友收藏\n刚刚有人投递过\n高新技术"
+     */
+    private void parseJobDesc() {
+        if (jobDesc == null || jobDesc.isEmpty()) {
+            return;
+        }
+
+        // 提取收藏数: "195位牛友收藏" -> 195
+        Pattern collectionPattern = Pattern.compile("(\\d+)位牛友收藏");
+        Matcher m = collectionPattern.matcher(jobDesc);
+        if (m.find()) {
+            this.collectionCount = Integer.parseInt(m.group(1));
+        }
+
+        // 检测活跃状态
+        if (jobDesc.contains("刚刚有人投递过")) {
+            this.activeStatus = "刚刚有人投递过";
+            this.isActive = true;
+        } else if (jobDesc.contains("今天有人投递")) {
+            this.activeStatus = "今天有人投递";
+            this.isActive = true;
+        } else {
+            this.activeStatus = "";
+            this.isActive = false;
         }
     }
 
@@ -274,6 +320,29 @@ public class JobRecord {
 
     public Integer getSalaryMonths() {
         return salaryMonths;
+    }
+
+    public boolean isNegotiable() {
+        return negotiable;
+    }
+
+    public int getCollectionCount() {
+        return collectionCount;
+    }
+
+    public String getActiveStatus() {
+        return activeStatus;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    /**
+     * 是否是高收藏岗位 (>=50)
+     */
+    public boolean isHighCollection() {
+        return collectionCount >= 50;
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.sql.SQLException;
  */
 public class MySQLUtil {
 
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/nowcoder_analysis?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8";
+    private static final String URL = "jdbc:mysql://10.128.30.233:3306/nowcoder_analysis?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8";
     private static final String USER = "root";
     private static final String PASSWORD = "111";
 

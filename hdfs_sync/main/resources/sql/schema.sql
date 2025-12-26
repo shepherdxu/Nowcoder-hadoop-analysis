@@ -133,3 +133,70 @@ CREATE TABLE dashboard_summary (
     metric_value VARCHAR(255),
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='仪表盘总览数据';
+
+-- ========================================
+-- MR11: 高收藏岗位分析
+-- ========================================
+DROP TABLE IF EXISTS high_collection_jobs;
+CREATE TABLE high_collection_jobs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR(50) NOT NULL UNIQUE,
+    high_collection_count INT DEFAULT 0 COMMENT '高收藏岗位数(>=50)',
+    avg_salary DECIMAL(10,2) COMMENT '平均薪资',
+    total_collection INT DEFAULT 0 COMMENT '总收藏数',
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_count (high_collection_count DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='高收藏岗位统计';
+
+-- ========================================
+-- MR12: 活跃岗位分析
+-- ========================================
+DROP TABLE IF EXISTS active_jobs_stats;
+CREATE TABLE active_jobs_stats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR(50) NOT NULL UNIQUE,
+    active_count INT DEFAULT 0 COMMENT '活跃岗位数',
+    avg_salary DECIMAL(10,2) COMMENT '平均薪资',
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_active (active_count DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活跃岗位统计';
+
+-- ========================================
+-- MR13: 薪资面议比例分析
+-- ========================================
+DROP TABLE IF EXISTS negotiable_ratio_stats;
+CREATE TABLE negotiable_ratio_stats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR(50) NOT NULL UNIQUE,
+    total_count INT DEFAULT 0 COMMENT '总岗位数',
+    negotiable_count INT DEFAULT 0 COMMENT '面议岗位数',
+    negotiable_ratio DECIMAL(5,2) COMMENT '面议比例%',
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='薪资面议比例';
+
+-- ========================================
+-- MR14: 高收藏岗位技能热度
+-- ========================================
+DROP TABLE IF EXISTS skill_collection_rank;
+CREATE TABLE skill_collection_rank (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    skill VARCHAR(100) NOT NULL UNIQUE,
+    total_collection INT DEFAULT 0 COMMENT '该技能总收藏数',
+    job_count INT DEFAULT 0 COMMENT '岗位数',
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_collection (total_collection DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='技能收藏热度排名';
+
+-- ========================================
+-- MR15: 活跃度-薪资关联
+-- ========================================
+DROP TABLE IF EXISTS activity_salary_comparison;
+CREATE TABLE activity_salary_comparison (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    activity_type VARCHAR(20) NOT NULL UNIQUE COMMENT '活跃/非活跃',
+    job_count INT DEFAULT 0,
+    avg_salary DECIMAL(10,2),
+    min_salary INT,
+    max_salary INT,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活跃度薪资对比';
